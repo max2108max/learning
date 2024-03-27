@@ -2,11 +2,11 @@ function first() {
   console.log("first");
 }
 function second() {
+  first() 
   console.log("second");
- first() 
 }
 function third() {
-  console.log("third");
   second()
+  console.log("third");
 }
 third()
