@@ -1,4 +1,14 @@
-function name() {
-    return "b" + "a" + +"a"+"a";
+
+function get(obj, path){
+
 }
-console.log(name());
+const obj = {
+    a:{
+        b:{
+            c:"d"
+        },
+        e:"f"
+    }
+};
+get(obj,"a.b")//c:d
+get(obj,"a.b.x")// undefined
