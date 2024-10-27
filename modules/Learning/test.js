@@ -1,8 +1,5 @@
-
-function foo() {
-	console.log( this.a );
-}
-
-
-
-foo(); // 2
+(function() {
+	var x = y = 10;
+})();
+console.log(y);
+console.log(x);
