@@ -1,13 +1,12 @@
-var myObject = {
-  // определим геттер для `a`
-  get a() {
-      return this._a_;
-  },
-  // определим сеттер для `a`
-  set a(val) {
-      this._a_ = val * 2;
-  }
-};
-myObject.a = 3;
-myObject.a; // 4
-console.log(myObject.a);
+for (let num of range(6,3)) {
+    console.log(num);
+}
+
+function range(a,b) {
+    if(a==b){return [a]}
+    if(a<b) {return arr = Array(b-a+1).fill(0).map((_,i) =>a+i)}
+    if(b<a) {return arr = Array(a-b+1).fill(0).map((_,i) =>b+i).reverse()}
+    }
+    
+
+
