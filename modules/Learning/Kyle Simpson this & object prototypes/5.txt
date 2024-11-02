@@ -1,0 +1,25 @@
+Затенение может даже произойти неявно, поэтому если вы хотите его избежать, будьте бдительны. Например:
+
+var anotherObject = {
+  a: 2,
+};
+
+var myObject = Object.create(anotherObject);
+
+anotherObject.a; // 2
+myObject.a; // 2
+
+anotherObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("a"); // false
+
+myObject.a++; // ой, неявное затенение!
+
+anotherObject.a; // 2
+myObject.a; // 3
+
+myObject.hasOwnProperty("a"); // true
+Хотя может показаться, что выражение myObject.a++ должно (через делегирование) 
+найти и просто инкрементировать свойство anotherObject.a, вместо этого операция ++ соответствует 
+выражению myObject.a = myObject.a + 1. В результате [[Get]] ищет свойство a через [[Prototype]] и 
+получает текущее значение 2 из anotherObject.a, далее это значение увеличивается на 1, после чего [[Put]]
+ присваивает значение 3 новому затеняющему свойству a в myObject. Ой!
