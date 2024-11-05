@@ -23,3 +23,26 @@ myObject.hasOwnProperty("a"); // true
 выражению myObject.a = myObject.a + 1. В результате [[Get]] ищет свойство a через [[Prototype]] и 
 получает текущее значение 2 из anotherObject.a, далее это значение увеличивается на 1, после чего [[Put]]
  присваивает значение 3 новому затеняющему свойству a в myObject. Ой!
+
+
+ Prototype       сам обьект                    с методами для прототипного наследования
+ __proto__  это геттер и сеттер                
+
+
+ .constructor  объекта по умолчанию указывает на функцию, которая, 
+ в свою очередь, имеет обратную ссылку на объект — ссылку .prototype
+
+ 
+var myObject = Object.create(anotherObject);
+это просто создание прототипа т.е делегирование прототипа
+
+
+ПОЛИФИЛ
+
+if (!Object.create) {
+  Object.create = function (o) {
+    function F() {}
+    F.prototype = o;
+    return new F();
+  };
+}
