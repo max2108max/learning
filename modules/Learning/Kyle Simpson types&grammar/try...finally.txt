@@ -1,0 +1,40 @@
+function foo() {
+	try {
+		return 42;
+	}
+	finally {
+		console.log( "Hello" );
+	}
+
+	console.log( "никогда не выполнится" );
+}
+
+console.log( foo() );
+// Hello
+// 42
+
+try выполняеться но затем сразу =====> finally и уже потом завершаеться foo()
+
+
+ТРЮК ======================================================================
+
+
+function foo() {
+	bar: {
+		try {
+			return 42;
+		}
+		finally {
+			// выйти из блока с меткой `bar`
+			break bar;
+		}
+	}
+
+	console.log( "Crazy" );
+
+	return "Hello";
+}
+
+console.log( foo() );
+// Crazy
+// Hello

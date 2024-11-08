@@ -1,0 +1,18 @@
+Символы — это специальные «уникальные» (не строго гарантированные!) значения, 
+которые можно использовать в качестве свойств объектов, практически не опасаясь каких-либо столкновений.
+
+В ES6 есть несколько предопределенных символов, доступ к которым осуществляется как к статическим свойствам функционального объекта Symbol, 
+например, Symbol.create, Symbol.iterator и т.д. Чтобы использовать их, сделайте что-то вроде:
+
+var mysym = Symbol( "my own symbol" );
+
+mysym;				// Symbol(my own symbol)
+mysym.toString();	// "Symbol(my own symbol)"
+typeof mysym; 		// "symbol"
+mysym.description   // 'my own symbol'
+
+var a = { };
+a[mysym] = "foobar";
+
+
+boolean(symbol) ====> всегда TRUE

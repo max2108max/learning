@@ -1,0 +1,80 @@
+Если Type(x) такой же, что и Type(y), то
+
+Если Type(x) – Undefined, вернуть true.
+
+Если Type(x) – Null, вернуть true.
+
+Если Type(x) – Number, то
+
+Если x – NaN, вернуть false.
+
+Если y – NaN, вернуть false.
+
+Если x имеет такое же числовое значение, что и y, вернуть true.
+
+Если x равно +0 и y равно −0, вернуть true.
+
+Если x равно −0 и y равно +0, вернуть true.
+
+Вернуть false.
+
+Если Type(x) – String, то вернуть true, если x и y имеют абсолютно одинаковую последовательность символов (одинаковой длины и с одинаковыми символами в соответствующих позициях). В противном случае вернуть false.
+
+Если Type(x) – Boolean, вернуть true, если x и y оба являются или true, или false. В противном случае вернуть false.
+
+Вернуть true, если x и y относятся к одному и тому же объекту. В противном случае вернуть false.
+
+Если x равно null и y – undefined, вернуть true.
+
+Если x – undefined и y – null, вернуть true.
+
+Если Type(x) – Number и Type(y) – String,
+вернуть результат сравнения x == ToNumber(y).
+
+Если Type(x) – String и Type(y) – Number,
+вернуть результат сравнения ToNumber(x) == y.
+
+Если Type(x) – Boolean, вернуть результат сравнения ToNumber(x) == y.
+
+Если Type(y) – Boolean, вернуть результат сравнения x == ToNumber(y).
+
+Если Type(x) – либо String, либо Number, и Type(y) – Object,
+вернуть результат сравнения x == ToPrimitive(y).
+
+Если Type(x) – Object и Type(y) –либо String, либо Number,
+вернуть результат сравнения ToPrimitive(x) == y.
+
+Вернуть false.
+
+
+var a = "abc";
+var b = Object( a );	// same as `new String( a )`
+
+a === b;				// false
+a == b;					// true
+
+
+
+
+ХИТРЫЙ ТРЮК
+
+if (a == 2 && a == 3) {
+	// ..
+}
+
+КАЗАЛОСЬ ЭТО НЕВОЗМОЖНО НО 
+
+
+var i = 2;
+
+Number.prototype.valueOf = function() {
+	return i++;
+};
+
+var a = new Number( 42 );
+
+if (a == 2 && a == 3) {
+	console.log( "Да, это случилось." );
+}
+
+

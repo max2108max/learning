@@ -1,0 +1,51 @@
+var a = 42;
+
+var b = a + "";			// неявное приведение
+
+var c = String( a );	// явное приведение
+
+
+
+// умножим `1.07` на `1000` семь раз
+var a = 1.07 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000 * 1000;
+
+// семь раз по три цифры => 21 цифра
+a.toString(); // "1.07e21"
+
+JSON.stringify(..) автоматически опустит значения undefined, function и symbol, когда столкнется с ними. 
+Если такое значение окажется в array, то оно заменяется на null (чтобы сохранить информацию о местоположении элементов в массиве). 
+
+JSON.stringify( undefined );					// undefined
+JSON.stringify( function(){} );					// undefined
+
+JSON.stringify( [1,undefined,function(){},4] );	// "[1,null,null,4]"
+JSON.stringify( { a:2, b:function(){} } );		// "{"a":2}"
+
+Значения string, number, boolean и null - все они в основном преобразуются JSON-строки так же,
+ как приводятся в string-значения с помощью правил абстрактной операции ToString.
+
+ Если вы передаете object-значение в JSON.stringify(..), и в этом object есть метод toJSON(), то toJSON() автоматически вызывается, 
+ чтобы (как бы) "привести" значение в безопасное для JSON значение перед началом преобразования в строку.
+
+ to boolean =========> FALSE ЗНАЧЕНИЯ :
+
+undefined
+null
+false
++0, -0 и NaN
+""
+
+
+var d = new Date( "Mon, 18 Aug 2014 08:53:06 CDT" );
+
++d; // 1408369986000  миллисекунды, прошедшие с 1 января 1970 года 00:00:00 UTC
+
+var timestamp = +new Date(); метка 
+
+другой вариант
+
+var timestamp = new Date().getTime();
+// var timestamp = (new Date()).getTime();
+// var timestamp = (new Date).getTime();
+
+или var timestamp = Date.now();
