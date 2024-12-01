@@ -2,7 +2,6 @@
 var value = 1;
 
 function f() {
- 
   if (1) {
     // так как ниже есть var value то он перемещаеться сюда и тут как будто стоит var value
     value = true;
@@ -30,10 +29,11 @@ console.log(value);
 
 // Так что без var результат будет также true, но внешняя переменная изменится.
 
-for (const  i = 0; i < array.length; i++) {}
-// тоже самое что и 
-{ 
-  const $$i = 0
-  for (const  i = 0; i < array.length; i++) {const i = $$i} // нельзя переопределять!!! а let можно!!!
+for (const i = 0; i < array.length; i++) {}
+// тоже самое что и
+{
+  const $$i = 0;
+  for (const i = 0; i < array.length; i++) {
+    const i = $$i;
+  } // нельзя переопределять!!! а let можно!!!
 }
-
