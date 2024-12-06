@@ -1,70 +1,71 @@
 const fs = require("fs");
 const path = require("path");
 const filePath = path.join(__dirname, "input.txt");
-const data = fs.readFileSync(filePath, "utf-8");
+const data = fs.readFileSync(filePath, "utf-8").split("\r\n");
 
-// Разделяем данные на правила и обновления
-let [rules, updates] = data.split("\r\n\r\n");
+// Directions: right, down, left, up
+const directions = [
+  [0, 1],
+  [1, 0],
+  [0, -1],
+  [-1, 0],
+];
+let x = 0;
+let y = 0;
+let directionIndex = 3; // Start facing up (index 3 in the directions array)
+let visited = new Set();
 
-// Обрабатываем правила и обновления
-rules = rules.split("\r\n").map(rule => rule.split("|"));
-updates = updates.split("\r\n").map(update => update.split(","));
+function isObstacle(map, x, y) {
+  return map[x] && map[x][y] === "#";
+}
 
-// Функция для проверки порядка обновлений
-const isOrdered = (update, rules) => {
-  for (let i = 0; i < update.length - 1; i++) {
-    // Проверяем, есть ли правило для текущей и следующей пары
-    if (
-      !rules.find(rule => rule[0] === update[i] && rule[1] === update[i + 1])
-    ) {
-      return false; // Если не нашли правило, возвращаем false
-    }
+function moveForward(map, x, y, dx, dy) {
+  if (!isObstacle(map, x + dx, y + dy)) {
+    return [x + dx, y + dy];
   }
-  return true; // Возвращаем true, если все пары корректны
-};
+  return [x, y];
+}
 
-// Функция для упорядочивания обновлений
-const orderList = (update, rules) => {
-  const dic = {};
-  const ordered = [];
+function turnRight(directionIndex) {
+  return (directionIndex + 1) % directions.length;
+}
 
-  update.forEach(page => {
-    dic[page] = rules
-      .filter(rule => rule[0] === page)
-      .map(rule => rule[1])
-      .filter(rule => update.includes(rule));
+// Parse the map and find the starting position
+const map = data.map(line => line.split(""));
+data.forEach((line, i) => {
+  line.split("").forEach((char, j) => {
+    if (char === "^") {
+      x = i;
+      y = j;
+    }
   });
-  console.log(dic);
-  while (Object.keys(dic).length) {
-    const lastPage = Object.keys(dic).find(key => dic[key].length === 0);
+});
 
-    for (const key in dic) {
-      dic[key] = dic[key].filter(item => item !== lastPage);
-    }
-    delete dic[lastPage];
-    ordered.unshift(lastPage);
+visited.add(`${x},${y}`);
+
+// Simulate the guard's patrol
+while (true) {
+  const [dx, dy] = directions[directionIndex];
+  let nextPosition = moveForward(map, x, y, dx, dy);
+
+  if (
+    nextPosition[0] < 0 ||
+    nextPosition[0] >= map.length ||
+    nextPosition[1] < 0 ||
+    nextPosition[1] >= map[nextPosition[0]].length
+  ) {
+    // Guard has left the mapped area
+    break;
   }
-  return ordered;
-};
 
-// Подсчет суммы средних значений обновлений
-const part1 = updates.reduce((acc, update) => {
-  if (!isOrdered(update, rules)) return acc; // Если порядок неверный, пропускаем
+  visited.add(`${nextPosition[0]},${nextPosition[1]}`);
 
-  const midIndex = Math.floor(update.length / 2);
-  const mid = parseInt(update[midIndex]); // Получаем среднее значение
-  acc += mid; // Добавляем к аккумулятору
-  return acc;
-}, 0);
+  if (isObstacle(map, nextPosition[0], nextPosition[1])) {
+    directionIndex = turnRight(directionIndex);
+  } else {
+    [x, y] = nextPosition;
+  }
+}
 
-const part2 = updates.reduce((acc, update) => {
-  if (isOrdered(update, rules)) return acc; // Если порядок верный, пропускаем
-
-  update = orderList(update, rules);
-  const midIndex = Math.floor(update.length / 2);
-  const mid = parseInt(update[midIndex]); // Получаем среднее значение
-  acc += mid; // Добавляем к аккумулятору
-  return acc;
-}, 0);
-
-console.log(part2); // Выводим результат для part2
+// Output the number of distinct positions visited
+console.log(visited.size);

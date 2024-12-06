@@ -1,36 +1,94 @@
 const fs = require("fs");
 const path = require("path");
 const filePath = path.join(__dirname, "input.txt");
-const data = fs.readFileSync(filePath, "utf-8");
+const data = fs.readFileSync(filePath, "utf-8").split("\r\n");
 
-// Разделяем данные на правила и обновления
-let [rules, updates] = data.split("\r\n\r\n");
-
-// Обрабатываем правила и обновления
-rules = rules.split("\r\n").map(rule => rule.split("|"));
-updates = updates.split("\r\n").map(update => update.split(","));
-
-// Функция для проверки порядка обновлений
-const isOrdered = (update, rules) => {
-  for (let i = 0; i < update.length - 1; i++) {
-    // Проверяем, есть ли правило для текущей и следующей пары
-    if (
-      !rules.find(rule => rule[0] === update[i] && rule[1] === update[i + 1])
-    ) {
-      return false; // Если не нашли правило, возвращаем false
+// Функция для поиска начальных координат
+const startingPosition = map => {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map[i].length; j++) {
+      if (map[i][j] === "^") {
+        return [i, j];
+      }
     }
   }
-  return true; // Возвращаем true, если все пары корректны
+  throw new Error("Символ '^' не найден.");
 };
 
-// Подсчет суммы средних значений обновлений
-const part1 = updates.reduce((acc, update) => {
-  if (!isOrdered(update, rules)) return acc; // Если порядок неверный, пропускаем
+let [x, y] = startingPosition(data);
 
-  const midIndex = Math.floor(update.length / 2);
-  const mid = parseInt(update[midIndex]); // Получаем среднее значение
-  acc += mid; // Добавляем к аккумулятору
-  return acc;
-}, 0);
+// Функции для движения охранника в разные стороны
+function runGuardUP(map, x, y) {
+  while (y > 129 || map[x][y] !== "#") {
+    if (y > 129) {
+      return [x, y];
+    }
+    let row = map[x];
+    let chars = row.split("");
+    chars[y] = "X";
+    map[x] = chars.join("");
+    x--;
+  }
+  return [x + 1, y];
+}
 
-console.log(part1); // Выводим результат
+function runGuardDOWN(map, x, y) {
+  while (y > 129 || map[x][y] !== "#") {
+    if (y > 129) {
+      return [x, y];
+    }
+    let row = map[x];
+    let chars = row.split("");
+    chars[y] = "X";
+    map[x] = chars.join("");
+    x++;
+  }
+  return [x - 1, y];
+}
+
+function runGuardRIGHT(map, x, y) {
+  while (y > 129 || map[x][y] !== "#") {
+    if (y > 129) {
+      return [x, y];
+    }
+    let row = map[x];
+    let chars = row.split("");
+    chars[y] = "X";
+    map[x] = chars.join("");
+    y++;
+  }
+  return [x, y - 1];
+}
+
+function runGuardLEFT(map, x, y) {
+  while (y > 129 || map[x][y] !== "#") {
+    if (y > 129) {
+      return [x, y];
+    }
+    let row = map[x];
+    let chars = row.split("");
+    chars[y] = "X";
+    map[x] = chars.join("");
+    y--;
+  }
+  return [x, y + 1];
+}
+
+for (let i = 0; i < 100; i++) {
+  [x, y] = runGuardUP(data, x, y);
+
+  [x, y] = runGuardRIGHT(data, x, y);
+
+  [x, y] = runGuardDOWN(data, x, y);
+
+  [x, y] = runGuardLEFT(data, x, y);
+}
+
+console.table(data);
+console.log(x, y);
+const allChars = data.flatMap(str => str.split(""));
+
+// Подсчитываем количество символов "X"
+const countX = allChars.filter(char => char === "X").length;
+
+console.log(countX);
