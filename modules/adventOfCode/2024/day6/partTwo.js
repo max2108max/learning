@@ -1,71 +1,104 @@
+//CHAT GPT SOLVE THIS (instead of brute force)
+
 const fs = require("fs");
 const path = require("path");
+
+// Read the input map from the file
 const filePath = path.join(__dirname, "input.txt");
 const data = fs.readFileSync(filePath, "utf-8").split("\r\n");
 
-// Directions: right, down, left, up
-const directions = [
-  [0, 1],
-  [1, 0],
-  [0, -1],
-  [-1, 0],
-];
-let x = 0;
-let y = 0;
-let directionIndex = 3; // Start facing up (index 3 in the directions array)
-let visited = new Set();
+function findObstructionPositions(mapInput) {
+  const map = mapInput.map(row => row.split(""));
+  const rows = map.length;
+  const cols = map[0].length;
 
-function isObstacle(map, x, y) {
-  return map[x] && map[x][y] === "#";
-}
+  // Directions and their movements
+  const directions = ["up", "right", "down", "left"];
+  const moves = {
+    up: { x: 0, y: -1 },
+    right: { x: 1, y: 0 },
+    down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+  };
 
-function moveForward(map, x, y, dx, dy) {
-  if (!isObstacle(map, x + dx, y + dy)) {
-    return [x + dx, y + dy];
-  }
-  return [x, y];
-}
+  // Find the initial position of the guard
+  let guardStart = { x: -1, y: -1 };
+  let startDirection = 0;
 
-function turnRight(directionIndex) {
-  return (directionIndex + 1) % directions.length;
-}
-
-// Parse the map and find the starting position
-const map = data.map(line => line.split(""));
-data.forEach((line, i) => {
-  line.split("").forEach((char, j) => {
-    if (char === "^") {
-      x = i;
-      y = j;
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      if (map[y][x] === "^") {
+        guardStart = { x, y };
+        startDirection = 0; // Facing 'up'
+        break;
+      }
     }
-  });
-});
-
-visited.add(`${x},${y}`);
-
-// Simulate the guard's patrol
-while (true) {
-  const [dx, dy] = directions[directionIndex];
-  let nextPosition = moveForward(map, x, y, dx, dy);
-
-  if (
-    nextPosition[0] < 0 ||
-    nextPosition[0] >= map.length ||
-    nextPosition[1] < 0 ||
-    nextPosition[1] >= map[nextPosition[0]].length
-  ) {
-    // Guard has left the mapped area
-    break;
   }
 
-  visited.add(`${nextPosition[0]},${nextPosition[1]}`);
+  // Function to simulate the guard's movement
+  function simulate(map, start, direction) {
+    const visited = new Set();
+    let current = { ...start };
+    let currentDirection = direction;
 
-  if (isObstacle(map, nextPosition[0], nextPosition[1])) {
-    directionIndex = turnRight(directionIndex);
-  } else {
-    [x, y] = nextPosition;
+    while (true) {
+      const key = `${current.x},${current.y},${currentDirection}`;
+      if (visited.has(key)) {
+        // Loop detected
+        return true;
+      }
+      visited.add(key);
+
+      // Calculate next position
+      const move = moves[directions[currentDirection]];
+      const next = { x: current.x + move.x, y: current.y + move.y };
+
+      // Check if next position is an obstacle or out of bounds
+      if (
+        next.x < 0 ||
+        next.x >= cols ||
+        next.y < 0 ||
+        next.y >= rows ||
+        map[next.y][next.x] === "#"
+      ) {
+        // Turn right
+        currentDirection = (currentDirection + 1) % 4;
+      } else {
+        // Move forward
+        current = next;
+      }
+
+      // Guard exits the map
+      if (next.x < 0 || next.x >= cols || next.y < 0 || next.y >= rows) {
+        return false;
+      }
+    }
   }
+
+  // Find all possible positions for the new obstruction
+  let obstructionPositions = 0;
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      // Skip invalid positions
+      if (map[y][x] !== "." || (x === guardStart.x && y === guardStart.y)) {
+        continue;
+      }
+
+      // Add obstruction and simulate
+      map[y][x] = "#";
+      const causesLoop = simulate(map, guardStart, startDirection);
+      map[y][x] = "."; // Remove the obstruction
+
+      if (causesLoop) {
+        obstructionPositions++;
+      }
+    }
+  }
+
+  return obstructionPositions;
 }
 
-// Output the number of distinct positions visited
-console.log(visited.size);
+// Call the function and output the result
+const result = findObstructionPositions(data);
+console.log(result);
